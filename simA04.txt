@@ -1,0 +1,33 @@
+units           		real
+region          		box block 0 300 0 300 0 300
+create_box    	4 box
+region          		ball sphere 150 150 150 50
+region          		inner sphere 150 150 150 100 side in
+region 			outer sphere 150 150 150 50 side out
+region			shell intersect 2 outer inner
+mass            		1 20.180
+mass            		2 39.948
+mass            		3 83.798
+mass            		4 131.293
+create_atoms    	1 random 700 11111 ball
+create_atoms    	2 random 500 22222 ball
+create_atoms	3 random 300 333333 shell
+create_atoms	4 random 100 444444 shell
+pair_style      	lj/cut 10.25
+pair_modify     	tail yes mix arithmetic
+pair_coeff      	1 1 0.070744 2.7890   # Ne–Ne
+pair_coeff      	2 2 0.232090 3.3952   # Ar–Ar
+pair_coeff      	3 3 0.317000 3.6240   # Kr–Kr
+pair_coeff      	4 4 0.458000 4.1000   # Xe–Xe
+neighbor        	2.0 bin
+neigh_modify    	delay 0 every 1 check yes
+minimize        	1.0e-6 1.0e-8 5000 50000
+timestep		2
+reset_timestep  	0
+velocity        		all create 120 123456 mom yes rot no dist gaussian
+fix             		NVE all nve
+thermo_style    	custom step temp press ke etotal
+thermo          	100
+dump            	traj all custom 200 sphere.lammpstrj id element x y z
+dump_modify    	traj element Ne Ar Kr Xe sort id
+run             		10000
