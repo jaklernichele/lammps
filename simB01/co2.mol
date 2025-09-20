@@ -1,0 +1,23 @@
+#CO2 rigid
+3 atoms
+0 bonds
+0 angles
+
+Coords
+
+1   0.0   0.0    0.000    # C no centro
+2   0.0   0.0    1.149    # O
+3   0.0   0.0   -1.149    # O
+
+Types
+
+1   1                 # C_CO2: tipo 1
+2   2                 # O_CO2: tipo 2
+3   2                 # O_CO2: tipo 2
+
+Charges
+
+1   0.70              # q(C)
+2  -0.35              # q(O)
+3  -0.35              # q(O)
+
