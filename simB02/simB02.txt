@@ -1,0 +1,37 @@
+units           real
+atom_style      full
+region          box block 0 300 0 300 0 300 units box
+create_box      3 box
+variable        rc equal 8.275
+pair_style      lj/cut ${rc}
+pair_modify     tail yes mix arithmetic
+pair_coeff      1 1 0.055    2.80
+pair_coeff      2 2 0.156    3.05
+pair_coeff      3 3 0.07154  3.31
+special_bonds   lj 0 0 0
+mass            1 12.011  # C
+mass            2 15.999  # O
+mass            3 14.0067 # N
+molecule        co2 co2.mol
+molecule        n2  n2.mol
+create_atoms    0 random 500 13579 box mol co2 24680
+create_atoms    0 random 500 97531 box mol n2  86420
+neighbor        4.0 bin
+neigh_modify    delay 0 every 1 check yes
+comm_modify     cutoff 15.0
+velocity        all create 150.0 112233 mom yes rot yes dist gaussian
+timestep        0.1                   # 0.02 fs
+fix             NVEsoft all rigid/small molecule
+run             5000
+unfix           NVEsoft
+reset_timestep	0
+timestep        0.25
+fix             NVE all rigid/small molecule
+compute         Tcom all temp/com
+thermo_modify   temp Tcom
+thermo_style    custom step temp press pe ke etotal
+thermo          1000
+dump            dpos all custom 500 mix.lammpstrj id mol type x y z
+dump_modify     dpos element C O N sort id
+run             50000
+
