@@ -1,0 +1,42 @@
+units           real
+variable        tCu equal 5.0      		# espessura da camada Cu
+variable        Y1 equal 50-${tCu}/2.0
+variable        Y2 equal 50+${tCu}/2.0
+region          box block 0 100 0 100 0 100
+create_box      2 box
+lattice         fcc 3.615
+region          slab1 block 0  45  ${Y1} ${Y2}  0 100 units box
+region          slab2 block 55 100 ${Y1} ${Y2}  0 100 units box
+region          slab3 block 0  100 0     ${tCu} 0 100 units box
+region          Artop block 0  100 ${Y2} 100    0 100 units box
+create_atoms    2 region slab1
+create_atoms    2 region slab2
+create_atoms    2 region slab3
+create_atoms    1 random 500 12345 Artop
+mass            1 39.948    # Ar
+mass            2 63.546    # Cu
+pair_style      lj/cut 8.488
+pair_modify     tail yes
+pair_coeff      1 1 0.232090 3.3952 # Ar-Ar
+pair_coeff      2 2 0.000000 2.3380 # Cu-Cu
+pair_coeff      1 2 0.199392 2.8715 # Ar-Cu
+neighbor        2.0 bin
+neigh_modify    delay 0 every 1 check yes
+group           gas type 1
+group           metal type 2
+fix             freeze metal setforce 0.0 0.0 0.0
+velocity        gas create 120 123456 mom yes rot no dist gaussian
+fix             NVEsoft gas nve/limit 0.05
+run             4000
+unfix		NVEsoft
+reset_timestep  0
+fix             NVE gas nve
+thermo_style    custom step temp press ke etotal
+thermo          200
+dump            d1 all custom 200 gap.lammpstrj id type element x y z
+dump_modify     d1 element Ar Cu sort id
+run             10000
+group           gCu type 2
+
+
+
