@@ -1,0 +1,27 @@
+units		real
+region 		box block 0 300 0 300 0 300
+create_box 	3 box
+region		layerNe block 0 300 270 300 0 300
+region		layerAr block 0 300 90  270 0 300
+region		layerKr block 0 300 0   90  0 300
+mass		1 20.180
+mass		2 39.948
+mass		3 83.798
+create_atoms	1 random 100 12345 layerNe
+create_atoms	2 random 600 67890 layerAr
+create_atoms	3 random 300 24680 layerKr
+velocity	all create 120 6789
+pair_style	lj/cut 9.060
+pair_coeff	1 1 0.0840 2.7890  # Ne-Ne
+pair_coeff	2 2 0.2321 3.3952  # Ar-Ar
+pair_coeff	3 3 0.3170 3.6240  # Kr-Kr
+pair_modify	mix arithmetic tail yes
+minimize 	1.0e-6 1.0e-8 5000 50000
+fix		NVE all nve
+thermo_style	custom temp press ke etotal
+thermo		100
+dump		traj all custom 50 mix.lammpstrj id type element x y z
+dump_modify	traj element Ne Ar Kr sort id
+run		10000
+
+
