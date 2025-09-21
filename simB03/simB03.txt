@@ -1,0 +1,49 @@
+units           real
+atom_style      full
+region          box block 0 300 0 300 0 300
+create_box      5 box  # 1=C_CO2, 2=O_CO2, 3=O_H2O, 4=H_H2O, 5=O_O2
+region          lower  block 0 300   0  90 0 300 # CO2
+region          middle block 0 300  90 270 0 300 # H2O
+region          upper  block 0 300 270 300 0 300 # O2
+pair_style      lj/cut/coul/long 12.0
+pair_modify     mix arithmetic tail yes
+kspace_style    pppm 1.0e-4
+pair_coeff      1 1 0.055 2.80     # C (CO2)
+pair_coeff      2 2 0.156 3.05     # O (CO2)
+pair_coeff      3 3 0.155 3.166    # O (H2O)
+pair_coeff      4 4 0.0   0.0      # H (H2O) sem LJ
+pair_coeff      5 5 0.156 3.05     # O (O2)
+special_bonds   lj/coul 0 0 0
+mass            1 12.011
+mass            2 15.999
+mass            3 15.999
+mass            4 1.008
+mass            5 15.999
+molecule        co2 co2.mol
+molecule        h2o h2o.mol
+molecule        o2  o2.mol
+create_atoms    0 random 100 10101 upper  mol o2  20202
+create_atoms    0 random 600 30303 middle mol h2o 40404
+create_atoms    0 random 300 50505 lower  mol co2 60606
+set 		type 1 charge  0.70      # C (CO2)
+set 		type 2 charge -0.35      # O (CO2)
+set 		type 3 charge -0.8476    # O (H2O)
+set 		type 4 charge  0.4238    # H (H2O)
+set 		type 5 charge  0.0       # O (O2) neutro
+neighbor        4.0 bin
+neigh_modify    delay 0 every 1 check yes
+comm_modify     cutoff 15.0
+group           gO2   region upper
+group           gH2O  region middle
+group           gCO2  region lower
+velocity        gO2   create 300.0 1111 mom yes rot yes dist gaussian
+velocity        gH2O  create 300.0 2222 mom yes rot yes dist gaussian
+velocity        gCO2  create 300.0 3333 mom yes rot yes dist gaussian
+fix             NVE all rigid/small molecule
+timestep        0.25
+thermo_style    custom step temp press ke etotal
+thermo          500
+dump            dpos all custom 50 layers.lammpstrj id element type x y z
+dump_modify     dpos element C O O H O sort id
+run             5000
+

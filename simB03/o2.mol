@@ -1,0 +1,14 @@
+# O2 rigid template (atom_style molecular) - no bonds
+2 atoms
+0 bonds
+
+Coords
+
+1   0.0   0.0   -0.605  # O (type 5)  (d=1.21 A)
+2   0.0   0.0    0.605  # O (type 5)
+
+Types
+
+1   5
+2   5
+
