@@ -26,7 +26,7 @@ neigh_modify    	delay 0 every 1 check yes
 molecule        	co2 co2.mol
 create_atoms    	0 random 150 12345 CO2down mol co2 11111
 create_atoms    	0 random 150 54321 CO2top  mol co2 22222
-group           	gas type 1 3 # C e O do CO2
+group           	gas type 1 3 # C O (CO2)
 group           	metal type 2
 fix             	freeze metal setforce 0.0 0.0 0.0
 velocity        	gas create 300.0 123456 mom yes rot yes dist gaussian loop geom
@@ -35,8 +35,7 @@ compute_modify  	Tgas dynamic/dof yes
 compute         	Pthermo all pressure Tgas
 thermo_modify   	temp Tgas
 thermo_modify   	press Pthermo
-timestep        	0.5  # 0.25 fs se ainda tiver colisões fortes
-#fix             	NVT gas rigid/nvt/small molecule temp 300.0 300.0 100.0
+timestep        	0.5
 fix             	NVE gas rigid/small molecule
 thermo_style    	custom step temp press ke etotal
 thermo          	5000
