@@ -1,0 +1,73 @@
+units           	real
+atom_style      	full
+variable        	tCu equal 5.0   # espessura
+variable        	Y1 equal 100-${tCu}/2.0
+variable        	Y2 equal 100+${tCu}/2.0
+region          	box block 0 100 0 200 0 100
+create_box      	6 box # 1=C_CO2, 2=O_CO2, 3=C_CH4, 4=H_CH4, 5=Fe, 6=Ni
+lattice         	fcc 3.615
+region          	slab1 block 0  45  ${Y1} ${Y2}  0 100 units box
+region          	slab2 block 55 100 ${Y1} ${Y2}  0 100 units box
+region          	slab3 block 0  100 0     ${tCu} 0 100 units box
+region			slab4 block 45 55 ${Y1} ${Y2} 0 45 units box
+region			slab5 block 45 55 ${Y1} ${Y2} 55 100 units box
+region          	slabAll union 5 slab1 slab2 slab3 slab4 slab5
+create_atoms    	5 region slab1
+create_atoms    	5 region slab2
+create_atoms    	5 region slab3
+create_atoms    	5 region slab4
+create_atoms    	5 region slab5
+set             	region slabAll type/fraction 6 0.35 98765
+region          	GasTop block 0 100 110 200 0 100 units box
+variable        	nTot equal 130
+variable        	nCO2 equal floor(${nTot}*0.5)    # ajuste a fração se desejar
+variable        	nCH4 equal ${nTot}-${nCO2}
+molecule        	co2 co2.mol
+molecule        	ch4 ch4.mol
+create_atoms    	0 random ${nCO2} 12345 GasTop mol co2 11111
+create_atoms    	0 random ${nCH4} 54321 GasTop mol ch4 22222
+mass            	1 12.011      # C_CO2
+mass            	2 15.999      # O_CO2
+mass            	3 12.011      # C_CH4
+mass            	4 1.008       # H_CH4
+mass            	5 55.845      # Fe
+mass            	6 58.6934     # Ni
+pair_style      	lj/cut/coul/long 8.75
+pair_modify     	tail yes mix geometric
+kspace_style    	pppm 1.0e-4
+pair_coeff      	1 1  0.0550   2.757    # C_CO2
+pair_coeff      	2 2  0.1600   3.033    # O_CO2
+pair_coeff      	3 3  0.0660   3.500    # C_CH4
+pair_coeff      	4 4  0.0000   1.000    # H_CH4 (neutro LJ)
+pair_coeff      	5 5  0.0000   2.60     # Fe
+pair_coeff      	6 6  0.0000   2.50     # Ni
+# Cruzados CO2–Fe/Ni
+pair_coeff      	1 5  0.030    3.00
+pair_coeff      	1 6  0.030    2.95
+pair_coeff      	2 5  0.120    3.10
+pair_coeff      	2 6  0.120    3.05
+# Cruzados CH4–Fe/Ni
+pair_coeff      	3 5  0.050    3.10
+pair_coeff      	3 6  0.050    3.05
+pair_coeff      	4 5  0.000    2.50
+pair_coeff      	4 6  0.000    2.50
+special_bonds   	lj/coul 0.0 0.0 0.0
+neighbor        	2.0 bin
+neigh_modify    	delay 0 every 1 check yes
+group           	metal region slabAll
+group           	gas   subtract all metal
+group           	gFe   type 5
+group           	gNi   type 6
+group           	gCO2  type 1 2
+group           	gCH4  type 3 4
+fix             	freeze metal setforce 0 0 0
+velocity       		gas create 200.0 123456 mom yes rot yes dist gaussian loop geom
+fix             	NVE gas rigid/small molecule
+timestep		0.2
+run			2000
+reset_timestep		0
+timestep		1
+thermo			1000
+dump            	d1 all custom 200 hole.lammpstrj id type element mol x y z
+dump_modify     	d1 element C O C H Fe Ni sort id
+run             	100000
