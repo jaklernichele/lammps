@@ -1,5 +1,6 @@
-LAMMPS Examples (Tutorial)
-Prof. Jakler Nichele
+LAMMPS Input Examples
+* Tutorial *
+Prof. Jakler Nichele, D.Sc.
 Military Institute of Engineering - Brazil
 jakler@ime.eb.br
 
