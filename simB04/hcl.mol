@@ -1,0 +1,23 @@
+# HCl rigid
+2 atoms
+1 bonds
+0 angles
+0 dihedrals
+0 impropers
+
+Coords
+
+1  0.000000   0.000000   0.000000     # H (type 1)
+2  1.2746     0.000000   0.000000     # Cl (type 2)
+
+Types
+
+1 1
+2 2
+
+Charges
+
+1  0.1000
+2 -0.1000
+
+

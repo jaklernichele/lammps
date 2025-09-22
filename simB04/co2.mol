@@ -1,0 +1,25 @@
+# CO2 rigid cluster (no bonds/angles)
+3 atoms
+0 bonds
+0 angles
+0 dihedrals
+0 impropers
+
+Coords
+
+1   0.000000   0.000000   0.000000     # C (type 7)
+2   1.160000   0.000000   0.000000     # O (type 8)
+3  -1.160000   0.000000   0.000000     # O (type 8)
+
+Types
+
+1 7
+2 8
+3 8
+
+Charges
+
+1  0.7000
+2 -0.3500
+3 -0.3500
+

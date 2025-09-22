@@ -1,0 +1,51 @@
+units           real
+atom_style      full
+region          box block 0 500 0 500 0 500 units box
+create_box      8 box
+region          ball sphere 250 250 250 80 units box
+region          inner sphere 250 250 250 200 units box side in
+region 		outer sphere 250 250 250 85 units box side out
+region		shell intersect 2 outer inner
+mass 		1  1.008 	# H_HCl
+mass 		2  35.45 	# Cl
+mass		3  1.008 	# H_HBr
+mass		4  79.904	# Br
+mass		5  15.999	# O_wat
+mass		6  1.008	# H_wat
+mass		7  12.011	# C_CO2
+mass		8  15.999	# O_CO2
+pair_style      lj/cut/coul/long 9.75
+pair_coeff      1 1   0.0150   1.2000    # H_HCl (sem LJ ou mínimo)
+pair_coeff      2 2   0.1000   3.5000    # Cl–Cl
+pair_coeff      3 3   0.0150   1.2000    # H_HBr (sem LJ ou mínimo)
+pair_coeff      4 4   0.1200   3.9000    # Br–Br
+pair_coeff      5 5   0.1553   3.1660    # O_wat–O_wat
+pair_coeff      6 6   0.0150   1.2000    # H_wat (placeholder ~0)
+pair_coeff      7 7   0.0559   2.8000    # C_CO2
+pair_coeff      8 8   0.1599   3.0500    # O_CO2
+pair_modify     tail yes mix arithmetic
+kspace_style    pppm 1.0e-4
+special_bonds 	lj/coul 0.0 0.0 0.0
+molecule        hcl  hcl.mol
+molecule        hbr  hbr.mol
+molecule        h2o  h2o.mol
+molecule        co2  co2.mol
+create_atoms    0 random 300 11111 ball mol hcl 12345
+create_atoms    0 random 250 22222 ball mol hbr 23456
+create_atoms    0 random 200 11111 shell mol h2o 34567
+create_atoms    0 random 150 11111 shell mol co2 45678
+minimize	1.0e-6 1.0e-8 5000 50000
+velocity	all create 100.0 12345 mom yes rot yes dist gaussian loop geom
+neighbor        12.0 bin
+neigh_modify    delay 0 every 1 check yes
+comm_modify     vel yes cutoff 18.0
+fix             NVE all rigid/small molecule
+timestep        0.25
+fix		VISC all viscous 0.003
+run		10000
+unfix		VISC
+reset_timestep	0
+thermo		500
+dump            dpos all custom 50 mix.lammpstrj id type element type x y z
+dump_modify     dpos element H Cl H Br O H C O sort id
+run             50000

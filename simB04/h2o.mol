@@ -1,0 +1,24 @@
+# H2O SPC/E rigid
+3 atoms
+2 bonds
+1 angles
+0 dihedrals
+0 impropers
+
+Coords
+
+1  0.000000   0.000000   0.000000     # O (type 5)
+2  0.9572     0.000000   0.000000     # H (type 6)
+3 -0.239987   0.927297   0.000000     # H (type 6)
+
+Types
+
+1 5
+2 6
+3 6
+
+Charges
+
+1 -0.8476
+2  0.4238
+3  0.4238
